@@ -1,0 +1,3 @@
+export const SET_USER = "SET_USER";
+export const SET_PRODUCT = "SET_PRODUCT";
+export const SET_CONFIRMED_PRODUCT = "SET_CONFIRMED_PRODUCT";

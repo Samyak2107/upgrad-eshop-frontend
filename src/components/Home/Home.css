@@ -1,0 +1,9 @@
+.productcard-div {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.product-card-div {
+  margin: 20px 80px;
+}
