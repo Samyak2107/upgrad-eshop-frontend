@@ -9,7 +9,6 @@ import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
@@ -17,6 +16,10 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import Button from "@mui/material/Button";
+import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 import "./NavigationBar.css";
 
 const Search = styled("div")(({ theme }) => ({
@@ -60,6 +63,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function NavigationBar() {
+  const { userDetails } = useSelector((state) => state.common);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -157,6 +162,15 @@ export default function NavigationBar() {
     </Menu>
   );
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    dispatch({ type: "SET_USER", payload: "" });
+    navigate("/login");
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -173,6 +187,7 @@ export default function NavigationBar() {
           >
             <ShoppingCartIcon />
           </IconButton>
+
           <Typography
             variant="h6"
             noWrap
@@ -181,19 +196,35 @@ export default function NavigationBar() {
           >
             upGrad E-Shop
           </Typography>
-          <Search sx={{ textAlign: "center" }}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
+
+          <div
+            style={{ width: "60%", display: "flex", justifyContent: "center" }}
+          >
+            <Search
+              sx={{
+                textAlign: "center",
+                display: userDetails ? "block" : "none",
+              }}
+            >
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+              />
+            </Search>
+          </div>
+
           <Box sx={{ flexGrow: 1 }} />
+
           <Box
             sx={{
-              display: { xs: "none", md: "flex", alignItems: "center" },
+              display: {
+                xs: "none",
+                md: userDetails ? "none" : "flex",
+                alignItems: "center",
+              },
             }}
           >
             {/* <a style={{ marginRight: "25px" }}>Home</a>
@@ -201,13 +232,72 @@ export default function NavigationBar() {
             <Button variant="contained" color="error">
               Logout
             </Button> */}
-            <a style={{ marginRight: "25px" }} href="/login">
+            <NavLink
+              to="login"
+              style={{ marginRight: "25px" }}
+              //style={({ isActive }) => (isActive ? activeStyle : undefined)}
+            >
+              Login
+            </NavLink>
+            <NavLink
+              to="signup"
+              style={{ marginRight: "25px" }}
+              //style={({ isActive }) => (isActive ? activeStyle : undefined)}
+            >
+              Sign Up
+            </NavLink>
+          </Box>
+
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: userDetails ? "flex" : "none",
+                alignItems: "center",
+              },
+            }}
+          >
+            <NavLink
+              to="products"
+              style={{ marginRight: "25px" }}
+              //style={({ isActive }) => (isActive ? activeStyle : undefined)}
+            >
+              Home
+            </NavLink>
+
+            <div
+              style={{
+                display:
+                  userDetails && userDetails.userType == "admin"
+                    ? "block"
+                    : "none",
+              }}
+            >
+              <NavLink
+                to="add-product"
+                style={{
+                  marginRight: "25px",
+                }}
+                //style={({ isActive }) => (isActive ? activeStyle : undefined)}
+              >
+                Add Product
+              </NavLink>
+            </div>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={(e) => handleLogout(e)}
+            >
+              Logout
+            </Button>
+            {/* <a style={{ marginRight: "25px" }} href="/login">
               Login
             </a>
             <a style={{ marginRight: "25px" }} href="/signup">
               Sign Up
-            </a>
+            </a> */}
           </Box>
+
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"

@@ -3,7 +3,11 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import SignUp from "./components/SignUp/SignUp";
 import SignIn from "./components/SignIn/SignIn";
 import Home from "./components/Home/Home";
@@ -12,6 +16,8 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import reducers from "./reducers";
 import ConfirmOrder from "./components/ConfirmOrder/ConfirmOrder";
+import { PrivateRoute } from "./PrivateRoute";
+import AddProduct from "./components/AddProduct/AddProduct";
 
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(
@@ -48,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: "/products/:productId/confirm-order",
         element: <ConfirmOrder />,
+      },
+      {
+        path: "/add-product",
+        element: <AddProduct />,
       },
     ],
   },

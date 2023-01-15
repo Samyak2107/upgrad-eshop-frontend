@@ -9,6 +9,7 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case SET_USER:
+      console.log("User details in redux => ", action.payload);
       return { ...state, userDetails: action.payload };
 
     case SET_PRODUCT:

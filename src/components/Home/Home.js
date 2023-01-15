@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { useTheme } from "@mui/material/styles";
@@ -8,6 +8,9 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import ProductCard from "../ProductCard/ProductCard";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import axios from "axios";
 import "./Home.css";
 
 const ITEM_HEIGHT = 48;
@@ -44,6 +47,29 @@ function getStyles(name, personName, theme) {
 }
 
 function Home() {
+  const { userDetails } = useSelector((state) => state.common);
+  // const navigate = useNavigate();
+  // useEffect(() => {
+  //   const checkUserLogin = () => {
+  //     if (!userDetails.email) {
+  //       navigate("/login");
+  //     }
+  //   };
+  //   checkUserLogin();
+  // }, []);
+  const [productList, setProductList] = React.useState();
+  useEffect(() => {
+    async function getProducts() {
+      const response = await axios.get(
+        "https://samyak-eshop-upgrad.onrender.com/products/display"
+      );
+      if (!response.error) {
+        setProductList(response.data.data);
+      }
+    }
+    getProducts();
+  }, []);
+
   const [alignment, setAlignment] = React.useState("left");
 
   const handleAlignment = (event, newAlignment) => {
@@ -164,15 +190,18 @@ function Home() {
       </div>
       <div className="product-card-div">
         <div className="productcard-div">
-          {dummyItems.map((data) => (
-            <ProductCard
-              name={data.itemName}
-              price={data.itemPrice}
-              desc={data.itemDesc}
-              imageUrl={data.itemImage}
-              itemId={data.itemId}
-            />
-          ))}
+          {productList &&
+            productList.map((data) => (
+              <ProductCard
+                name={data.itemName}
+                price={data.itemPrice}
+                desc={data.itemDesc}
+                imageUrl={data.itemImageUrl}
+                itemId={data.itemId}
+                itemCategory={data.itemCategory}
+                availableQuantity={data.availableQuantity}
+              />
+            ))}
         </div>
       </div>
     </div>

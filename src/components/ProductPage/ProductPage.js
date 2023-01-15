@@ -29,10 +29,27 @@ function ProductPage() {
 
   const handlePlaceOrder = (e) => {
     e.preventDefault();
-    const { name, itemId, desc, price, imageUrl } = productSelected;
+    const {
+      name,
+      itemId,
+      desc,
+      price,
+      imageUrl,
+      itemCategory,
+      availableQuantity,
+    } = productSelected;
     dispatch({
       type: "SET_CONFIRMED_PRODUCT",
-      payload: { name, itemId, desc, price, imageUrl, orderQuantity },
+      payload: {
+        name,
+        itemId,
+        desc,
+        price,
+        imageUrl,
+        orderQuantity,
+        itemCategory,
+        availableQuantity,
+      },
     });
     navigate(`/products/${productSelected.itemId}/confirm-order`);
   };
@@ -79,7 +96,7 @@ function ProductPage() {
           >
             <label>{productSelected.name}</label>
             <Chip
-              label="Available quantity: 100"
+              label={"Available quantity: " + productSelected.availableQuantity}
               color="primary"
               sx={{
                 marginTop: "7px",
@@ -89,7 +106,10 @@ function ProductPage() {
             />
           </div>
           <p>
-            Category: <span style={{ fontWeight: 550 }}>Electronics</span>
+            Category:{" "}
+            <span style={{ fontWeight: 550 }}>
+              {productSelected.itemCategory}
+            </span>
           </p>
           <p>{productSelected.desc}</p>
           <p style={{ color: "red", fontSize: "22px" }}>

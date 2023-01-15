@@ -148,7 +148,10 @@ export default function ConfirmOrder() {
                   </span>
                 </p>
                 <p>
-                  Category: <span style={{ fontWeight: 550 }}>Electronics</span>
+                  Category:{" "}
+                  <span style={{ fontWeight: 550 }}>
+                    {confirmedProduct.itemCategory}
+                  </span>
                 </p>
                 <p>{confirmedProduct.desc}</p>
                 <p style={{ color: "red", fontSize: "22px" }}>
@@ -355,7 +358,9 @@ export default function ConfirmOrder() {
                   </p>
                   <p>
                     Category:{" "}
-                    <span style={{ fontWeight: "550" }}>Electronics</span>
+                    <span style={{ fontWeight: "550" }}>
+                      {confirmedProduct.itemCategory}
+                    </span>
                   </p>
                   <p>{confirmedProduct.desc}</p>
                   <p style={{ color: "red", fontSize: "22px" }}>

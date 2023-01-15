@@ -10,23 +10,51 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-export default function ProductCard({ name, price, desc, imageUrl, itemId }) {
+export default function ProductCard({
+  name,
+  price,
+  desc,
+  imageUrl,
+  itemId,
+  itemCategory,
+  availableQuantity,
+}) {
+  const { userDetails } = useSelector((state) => state.common);
+
   const dispatch = useDispatch();
   const [buyClicked, setBuyClicked] = React.useState(false);
-  const handleBuy = (e, itemId, name, price, desc, imageUrl) => {
+  const handleBuy = (
+    e,
+    itemId,
+    name,
+    price,
+    desc,
+    imageUrl,
+    itemCategory,
+    availableQuantity
+  ) => {
     e.preventDefault();
     setBuyClicked(true);
     dispatch({
       type: "SET_PRODUCT",
-      payload: { itemId, name, price, desc, imageUrl },
+      payload: {
+        itemId,
+        name,
+        price,
+        desc,
+        imageUrl,
+        itemCategory,
+        availableQuantity,
+      },
     });
     navigate(`/products/${itemId}`);
   };
   const navigate = useNavigate();
   return (
-    <Card sx={{ marginTop: "20px", maxWidth: 300 }}>
-      <CardMedia sx={{ height: 140 }} image={imageUrl} title="green iguana" />
+    <Card sx={{ margin: "15px", maxWidth: 300 }}>
+      <CardMedia sx={{ height: 180 }} image={imageUrl} title="green iguana" />
       <CardContent>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Typography gutterBottom variant="h5" component="div">
@@ -43,12 +71,28 @@ export default function ProductCard({ name, price, desc, imageUrl, itemId }) {
       <CardActions sx={{ display: "flex", justifyContent: "space-between" }}>
         <Button
           variant="contained"
-          onClick={(e) => handleBuy(e, itemId, name, price, desc, imageUrl)}
+          onClick={(e) =>
+            handleBuy(
+              e,
+              itemId,
+              name,
+              price,
+              desc,
+              imageUrl,
+              itemCategory,
+              availableQuantity
+            )
+          }
         >
           Buy
         </Button>
         {/* {buyClicked && <Navigate to={`/products/${itemId}`} />} */}
-        <div>
+        <div
+          style={{
+            display:
+              userDetails && userDetails.userType == "admin" ? "block" : "none",
+          }}
+        >
           <IconButton aria-label="edit">
             <EditIcon />
           </IconButton>
