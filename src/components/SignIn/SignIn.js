@@ -28,10 +28,13 @@ function SignIn() {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:4000/users/auth", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://samyak-eshop-upgrad.onrender.com/users/auth",
+        {
+          email,
+          password,
+        }
+      );
       if (!response.error) {
         console.log(response);
         dispatch({
