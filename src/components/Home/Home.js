@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { useTheme } from "@mui/material/styles";
@@ -47,7 +47,7 @@ function getStyles(name, personName, theme) {
 }
 
 function Home() {
-  const { userDetails } = useSelector((state) => state.common);
+  const { userDetails, searchText } = useSelector((state) => state.common);
   // const navigate = useNavigate();
   // useEffect(() => {
   //   const checkUserLogin = () => {
@@ -65,15 +65,41 @@ function Home() {
       );
       if (!response.error) {
         setProductList(response.data.data);
+        setFilteredProducts(
+          response.data.data.filter((product) => {
+            return product.itemName.toLowerCase().includes(searchText);
+          })
+        );
       }
     }
     getProducts();
+  }, [searchText]);
+
+  const [productCategories, setProductCategories] = useState();
+
+  useEffect(() => {
+    async function getProductCategories() {
+      const response = await axios.get(
+        "https://samyak-eshop-upgrad.onrender.com/products/get-categories"
+      );
+      if (!response.error) {
+        console.log("Product categories => ", response);
+        setProductCategories(response.data.data);
+      }
+    }
+    getProductCategories();
   }, []);
 
-  const [alignment, setAlignment] = React.useState("left");
+  const [alignment, setAlignment] = React.useState("");
 
   const handleAlignment = (event, newAlignment) => {
     setAlignment(newAlignment);
+    setFilteredProducts(
+      productList &&
+        productList.filter((product) => {
+          return product.itemCategory.includes(newAlignment);
+        })
+    );
   };
 
   const theme = useTheme();
@@ -82,6 +108,31 @@ function Home() {
 
   const handleChange = (event) => {
     setAge(event.target.value);
+    console.log("Changing filter => ", event.target.value);
+    if (event.target.value == 10) {
+      setFilteredProducts(
+        productList &&
+          productList.sort((a, b) => {
+            return b.itemPrice - a.itemPrice;
+          })
+      );
+    } else if (event.target.value == 20) {
+      const sortByLowToHigh =
+        productList &&
+        productList.sort((a, b) => {
+          return a.itemPrice - b.itemPrice;
+        });
+      setFilteredProducts(sortByLowToHigh);
+    } else if (event.target.value == 30) {
+      setFilteredProducts(
+        productList &&
+          productList.sort((a, b) => {
+            return a.createdAt - b.createdAt;
+          })
+      );
+    } else {
+      setFilteredProducts(productList);
+    }
   };
 
   const dummyItems = [
@@ -141,6 +192,20 @@ function Home() {
     },
   ];
 
+  const [filteredProducts, setFilteredProducts] = useState();
+
+  const filteredTestProducts =
+    productList &&
+    productList.filter((product) => {
+      return product.itemName.toLowerCase().includes(searchText);
+    });
+
+  const filterByCategory =
+    productList &&
+    productList.filter((product) => {
+      return product.itemCategory.toLowerCase().includes(alignment);
+    });
+
   return (
     <div>
       <div style={{ textAlign: "center", margin: "15px" }}>
@@ -150,10 +215,16 @@ function Home() {
           onChange={handleAlignment}
           aria-label="text alignment"
         >
-          <ToggleButton value="left" aria-label="left aligned">
+          <ToggleButton value="" aria-label="left aligned">
             All
           </ToggleButton>
-          <ToggleButton value="center" aria-label="centered">
+          {productCategories &&
+            productCategories.map((item) => (
+              <ToggleButton value={item} aria-label={item}>
+                {item}
+              </ToggleButton>
+            ))}
+          {/* <ToggleButton value="center" aria-label="centered">
             Apparel
           </ToggleButton>
           <ToggleButton value="aligned" aria-label="justified aligned">
@@ -164,7 +235,7 @@ function Home() {
           </ToggleButton>
           <ToggleButton value="justify" aria-label="justified">
             Personal Care
-          </ToggleButton>
+          </ToggleButton> */}
         </ToggleButtonGroup>
       </div>
       <div
@@ -190,8 +261,8 @@ function Home() {
       </div>
       <div className="product-card-div">
         <div className="productcard-div">
-          {productList &&
-            productList.map((data) => (
+          {filteredProducts &&
+            filteredProducts.map((data) => (
               <ProductCard
                 name={data.itemName}
                 price={data.itemPrice}

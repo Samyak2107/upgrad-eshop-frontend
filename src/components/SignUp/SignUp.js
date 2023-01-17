@@ -54,7 +54,7 @@ function SignUp() {
     }
     try {
       const response = await axios.post(
-        "http://localhost:4000/users/user-signup",
+        "https://samyak-eshop-upgrad.onrender.com/users/user-signup",
         { userType, firstName, lastName, email, password, contact }
       );
       if (!response.error) {

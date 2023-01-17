@@ -3,6 +3,7 @@ import {
   SET_PRODUCT,
   SET_CONFIRMED_PRODUCT,
   SET_PRODUCT_FOR_EDITING,
+  SET_SEARCH_TEXT,
 } from "../constants";
 
 const INITIAL_STATE = {
@@ -10,6 +11,7 @@ const INITIAL_STATE = {
   userDetails: {},
   confirmedProduct: {},
   productForEditing: {},
+  searchText: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -26,6 +28,9 @@ export default (state = INITIAL_STATE, action) => {
 
     case SET_PRODUCT_FOR_EDITING:
       return { ...state, productForEditing: action.payload };
+
+    case SET_SEARCH_TEXT:
+      return { ...state, searchText: action.payload };
 
     default:
       return state;

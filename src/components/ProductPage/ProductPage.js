@@ -1,16 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Chip } from "@mui/material";
+import axios from "axios";
 import "./ProductPage.css";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 
 function ProductPage() {
   const { productSelected } = useSelector((state) => state.common);
+  const [productCategories, setProductCategories] = useState();
+
+  useEffect(() => {
+    async function getProductCategories() {
+      const response = await axios.get(
+        "https://samyak-eshop-upgrad.onrender.com/products/get-categories"
+      );
+      if (!response.error) {
+        console.log("Product categories => ", response);
+        setProductCategories(response.data.data);
+      }
+    }
+    getProductCategories();
+  }, []);
 
   const [orderQuantity, setOrderQuantity] = useState(1);
 
@@ -66,6 +81,15 @@ function ProductPage() {
           <ToggleButton value="left" aria-label="left aligned">
             All
           </ToggleButton>
+          {productCategories &&
+            productCategories.map((item) => (
+              <ToggleButton value={item} aria-label={item}>
+                {item}
+              </ToggleButton>
+            ))}
+          {/* <ToggleButton value="left" aria-label="left aligned">
+            All
+          </ToggleButton>
           <ToggleButton value="center" aria-label="centered">
             Apparel
           </ToggleButton>
@@ -77,7 +101,7 @@ function ProductPage() {
           </ToggleButton>
           <ToggleButton value="justify" aria-label="justified">
             Personal Care
-          </ToggleButton>
+          </ToggleButton> */}
         </ToggleButtonGroup>
       </div>
 

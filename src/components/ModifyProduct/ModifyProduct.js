@@ -11,19 +11,17 @@ function ModifyProduct() {
   const [itemCategories, setItemCategories] = useState();
   const [productState, setProductState] = useState();
   const { productForEditing } = useSelector((state) => state.common);
-  useEffect(() => {
-    async function getProductCount() {
-      const response = await axios.get(
-        "https://samyak-eshop-upgrad.onrender.com/products/display"
-      );
-      if (!response.error) {
-        console.log(response);
-        setState({ ...state, itemId: response.data.data.length + 1 });
-        console.log("Items in the db => ", response.data.data.length);
-      }
-    }
-    getProductCount();
-  }, []);
+
+  const [state, setState] = useState({
+    itemId: "",
+    itemName: "",
+    itemCategory: "",
+    itemManufacturer: "",
+    availableQuantity: "",
+    itemPrice: "",
+    itemImageUrl: "",
+    itemDesc: "",
+  });
 
   useEffect(() => {
     async function getProductCategories() {
@@ -31,8 +29,9 @@ function ModifyProduct() {
         "https://samyak-eshop-upgrad.onrender.com/products/get-categories"
       );
       if (!response.error) {
-        console.log(response);
+        console.log("Product categories => ", response);
         setItemCategories(response.data.data);
+        setOptions(response.data.data.map((item) => createOption(item)));
       }
     }
     getProductCategories();
@@ -58,12 +57,12 @@ function ModifyProduct() {
           itemPrice,
           itemImageUrl,
           itemDesc,
-        } = response.data.data;
+        } = await response.data.data;
+        setValue(createOption(itemCategory));
         setState({
-          ...state,
           itemId: itemId,
           itemName: itemName,
-          itemCategory: createOption(itemCategory),
+          itemCategory: itemCategory,
           itemDesc: itemDesc,
           itemImageUrl: itemImageUrl,
           itemPrice: itemPrice,
@@ -80,13 +79,15 @@ function ModifyProduct() {
     value: label,
   });
 
-  // const defaultOptions = [
-  //   createOption("One"),
-  //   createOption("Two"),
-  //   createOption("Three"),
-  // ];
-  const defaultOptions =
+  const defaultOptions = [
+    createOption("One"),
+    createOption("Two"),
+    createOption("Three"),
+  ];
+
+  const testDefOptions =
     itemCategories && itemCategories.map((item) => createOption(item));
+  console.log("testing default mapping => ", testDefOptions);
 
   const [options, setOptions] = useState(defaultOptions);
   const [value, setValue] = useState();
@@ -103,17 +104,6 @@ function ModifyProduct() {
     setState({ ...state, itemCategory: newValue.value });
   };
 
-  const [state, setState] = useState({
-    itemId: "",
-    itemName: "",
-    itemCategory: "",
-    itemManufacturer: "",
-    availableQuantity: "",
-    itemPrice: "",
-    itemImageUrl: "",
-    itemDesc: "",
-  });
-
   const handleChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
   };
@@ -121,7 +111,7 @@ function ModifyProduct() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleAddProduct = async (e) => {
+  const handleModifyProduct = async (e) => {
     e.preventDefault();
     const {
       itemId,
@@ -147,23 +137,26 @@ function ModifyProduct() {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:4000/products/add", {
-        itemId,
-        itemName,
-        itemCategory,
-        itemManufacturer,
-        availableQuantity,
-        itemPrice,
-        itemImageUrl,
-        itemDesc,
-      });
+      const response = await axios.put(
+        "https://samyak-eshop-upgrad.onrender.com/products/modify-db",
+        {
+          itemId,
+          itemName,
+          itemCategory,
+          itemManufacturer,
+          availableQuantity,
+          itemPrice,
+          itemImageUrl,
+          itemDesc,
+        }
+      );
       if (!response.error) {
         console.log(response);
-        alert("Product added successfully!");
+        alert("Product modified successfully!");
         navigate("/products");
       }
     } catch {
-      alert("Error in adding a product!");
+      alert("Error in modifying the product!");
     }
   };
 
@@ -277,7 +270,7 @@ function ModifyProduct() {
             <Button
               variant="contained"
               sx={{ width: "45ch", background: "var(--primary)" }}
-              onClick={(e) => handleAddProduct(e)}
+              onClick={(e) => handleModifyProduct(e)}
             >
               SAVE PRODUCT
             </Button>

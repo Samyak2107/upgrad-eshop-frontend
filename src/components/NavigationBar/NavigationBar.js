@@ -65,6 +65,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function NavigationBar() {
   const { userDetails } = useSelector((state) => state.common);
 
+  const [searchText, setSearchText] = React.useState("");
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -171,6 +173,11 @@ export default function NavigationBar() {
     navigate("/login");
   };
 
+  const handleSearchText = (e) => {
+    setSearchText(e.target.value);
+    dispatch({ type: "SET_SEARCH_TEXT", payload: e.target.value });
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -212,6 +219,9 @@ export default function NavigationBar() {
               <StyledInputBase
                 placeholder="Search…"
                 inputProps={{ "aria-label": "search" }}
+                name="searchText"
+                value={searchText}
+                onChange={(e) => handleSearchText(e)}
               />
             </Search>
           </div>

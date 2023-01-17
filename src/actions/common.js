@@ -3,6 +3,7 @@ import {
   SET_USER,
   SET_CONFIRMED_PRODUCT,
   SET_PRODUCT_FOR_EDITING,
+  SET_SEARCH_TEXT,
 } from "../constants";
 
 export const setUser = (data) => ({
@@ -22,5 +23,10 @@ export const setConfirmedProduct = (data) => ({
 
 export const setProductForEditing = (data) => ({
   type: SET_PRODUCT_FOR_EDITING,
+  payload: data,
+});
+
+export const setSearchText = (data) => ({
+  type: SET_SEARCH_TEXT,
   payload: data,
 });
