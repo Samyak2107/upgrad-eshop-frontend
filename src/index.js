@@ -18,6 +18,7 @@ import reducers from "./reducers";
 import ConfirmOrder from "./components/ConfirmOrder/ConfirmOrder";
 import { PrivateRoute } from "./PrivateRoute";
 import AddProduct from "./components/AddProduct/AddProduct";
+import ModifyProduct from "./components/ModifyProduct/ModifyProduct";
 
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: "/add-product",
         element: <AddProduct />,
+      },
+      {
+        path: "/modify-product",
+        element: <ModifyProduct />,
       },
     ],
   },

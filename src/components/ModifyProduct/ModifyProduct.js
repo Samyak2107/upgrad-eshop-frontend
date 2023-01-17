@@ -4,9 +4,13 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
 import CreatableSelect from "react-select/creatable";
 
 function ModifyProduct() {
+  const [itemCategories, setItemCategories] = useState();
+  const [productState, setProductState] = useState();
+  const { productForEditing } = useSelector((state) => state.common);
   useEffect(() => {
     async function getProductCount() {
       const response = await axios.get(
@@ -21,16 +25,68 @@ function ModifyProduct() {
     getProductCount();
   }, []);
 
+  useEffect(() => {
+    async function getProductCategories() {
+      const response = await axios.get(
+        "https://samyak-eshop-upgrad.onrender.com/products/get-categories"
+      );
+      if (!response.error) {
+        console.log(response);
+        setItemCategories(response.data.data);
+      }
+    }
+    getProductCategories();
+  }, []);
+
+  useEffect(() => {
+    async function getProductForModification() {
+      console.log("Product for modification => ", productForEditing);
+      const itemId = productForEditing;
+      const response = await axios.post(
+        "https://samyak-eshop-upgrad.onrender.com/products/modify",
+        itemId
+      );
+      if (!response.error) {
+        console.log("Modify product API response =>", response);
+        setProductState(response.data.data);
+        const {
+          itemId,
+          itemName,
+          itemCategory,
+          itemManufacturer,
+          availableQuantity,
+          itemPrice,
+          itemImageUrl,
+          itemDesc,
+        } = response.data.data;
+        setState({
+          ...state,
+          itemId: itemId,
+          itemName: itemName,
+          itemCategory: createOption(itemCategory),
+          itemDesc: itemDesc,
+          itemImageUrl: itemImageUrl,
+          itemPrice: itemPrice,
+          availableQuantity: availableQuantity,
+          itemManufacturer: itemManufacturer,
+        });
+      }
+    }
+    getProductForModification();
+  }, []);
+
   const createOption = (label) => ({
     label,
     value: label,
   });
 
-  const defaultOptions = [
-    createOption("One"),
-    createOption("Two"),
-    createOption("Three"),
-  ];
+  // const defaultOptions = [
+  //   createOption("One"),
+  //   createOption("Two"),
+  //   createOption("Three"),
+  // ];
+  const defaultOptions =
+    itemCategories && itemCategories.map((item) => createOption(item));
 
   const [options, setOptions] = useState(defaultOptions);
   const [value, setValue] = useState();
@@ -116,7 +172,7 @@ function ModifyProduct() {
       <div style={{ marginTop: "50px" }}>
         <div className="signin-div">
           <label style={{ fontWeight: "520", fontSize: "25px" }}>
-            Add Product
+            Modify Product
           </label>
           <div className="email-password-div">
             <div style={{ margin: "15px" }}>

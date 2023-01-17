@@ -52,6 +52,15 @@ export default function ProductCard({
     navigate(`/products/${itemId}`);
   };
   const navigate = useNavigate();
+
+  const handleEditProduct = (e) => {
+    e.preventDefault();
+    dispatch({
+      type: "SET_PRODUCT_FOR_EDITING",
+      payload: { itemId },
+    });
+    navigate("/modify-product");
+  };
   return (
     <Card sx={{ margin: "15px", maxWidth: 300 }}>
       <CardMedia sx={{ height: 180 }} image={imageUrl} title="green iguana" />
@@ -94,7 +103,7 @@ export default function ProductCard({
           }}
         >
           <IconButton aria-label="edit">
-            <EditIcon />
+            <EditIcon onClick={(e) => handleEditProduct(e)} />
           </IconButton>
           <IconButton aria-label="delete">
             <DeleteIcon />

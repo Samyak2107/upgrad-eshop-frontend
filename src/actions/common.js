@@ -1,4 +1,9 @@
-import { SET_PRODUCT, SET_USER, SET_CONFIRMED_PRODUCT } from "../constants";
+import {
+  SET_PRODUCT,
+  SET_USER,
+  SET_CONFIRMED_PRODUCT,
+  SET_PRODUCT_FOR_EDITING,
+} from "../constants";
 
 export const setUser = (data) => ({
   type: SET_USER,
@@ -12,5 +17,10 @@ export const setProduct = (data) => ({
 
 export const setConfirmedProduct = (data) => ({
   type: SET_CONFIRMED_PRODUCT,
+  payload: data,
+});
+
+export const setProductForEditing = (data) => ({
+  type: SET_PRODUCT_FOR_EDITING,
   payload: data,
 });
