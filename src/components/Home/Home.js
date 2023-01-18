@@ -47,7 +47,41 @@ function getStyles(name, personName, theme) {
 }
 
 function Home() {
-  const { userDetails, searchText } = useSelector((state) => state.common);
+  const { searchText } = useSelector((state) => state.common);
+  const [filteredProducts, setFilteredProducts] = useState();
+  useEffect(() => {
+    async function getProducts() {
+      const response = await axios.get(
+        "https://samyak-eshop-upgrad.onrender.com/products/display"
+      );
+      // if (!response.error && !searchText) {
+      //   setProductList(response.data.data);
+      //   setFilteredProducts(response.data.data);
+      // } else if (!response.error && searchText) {
+      //   setFilteredProducts(
+      //     response.data.data.filter((product) => {
+      //       return product.itemName
+      //         .toLowerCase()
+      //         .includes(searchText.toLowerCase());
+      //     })
+      //   );
+      // }
+      if (!response.error) {
+        // if (searchText == "") {
+        //   setProductList(response.data.data);
+        //   setFilteredProducts(response.data.data);
+        // } else {
+        //   setFilteredProducts(
+        //     response.data.data.filter((product) => {
+        //       return product.itemName.toLowerCase().includes(searchText);
+        //     })
+        //   );
+        // }
+        setProductList(response.data.data);
+      }
+    }
+    getProducts();
+  }, [searchText, 1000]);
   // const navigate = useNavigate();
   // useEffect(() => {
   //   const checkUserLogin = () => {
@@ -58,22 +92,6 @@ function Home() {
   //   checkUserLogin();
   // }, []);
   const [productList, setProductList] = React.useState();
-  useEffect(() => {
-    async function getProducts() {
-      const response = await axios.get(
-        "https://samyak-eshop-upgrad.onrender.com/products/display"
-      );
-      if (!response.error) {
-        setProductList(response.data.data);
-        setFilteredProducts(
-          response.data.data.filter((product) => {
-            return product.itemName.toLowerCase().includes(searchText);
-          })
-        );
-      }
-    }
-    getProducts();
-  }, [searchText]);
 
   const [productCategories, setProductCategories] = useState();
 
@@ -90,21 +108,31 @@ function Home() {
     getProductCategories();
   }, []);
 
-  const [alignment, setAlignment] = React.useState("");
+  const [alignment, setAlignment] = React.useState("all");
 
   const handleAlignment = (event, newAlignment) => {
     setAlignment(newAlignment);
-    setFilteredProducts(
-      productList &&
-        productList.filter((product) => {
-          return product.itemCategory.includes(newAlignment);
-        })
-    );
+    if (newAlignment == "all") {
+      setFilteredProducts(productList);
+    } else {
+      setFilteredProducts(
+        productList &&
+          productList.filter((product) => {
+            return product.itemCategory.includes(newAlignment);
+          })
+      );
+      setProductList(
+        productList &&
+          productList.filter((product) => {
+            return product.itemCategory.includes(newAlignment);
+          })
+      );
+    }
   };
 
   const theme = useTheme();
 
-  const [age, setAge] = React.useState("");
+  const [age, setAge] = React.useState("def");
 
   const handleChange = (event) => {
     setAge(event.target.value);
@@ -130,8 +158,6 @@ function Home() {
             return a.createdAt - b.createdAt;
           })
       );
-    } else {
-      setFilteredProducts(productList);
     }
   };
 
@@ -192,8 +218,6 @@ function Home() {
     },
   ];
 
-  const [filteredProducts, setFilteredProducts] = useState();
-
   const filteredTestProducts =
     productList &&
     productList.filter((product) => {
@@ -215,7 +239,7 @@ function Home() {
           onChange={handleAlignment}
           aria-label="text alignment"
         >
-          <ToggleButton value="" aria-label="left aligned">
+          <ToggleButton value="all" aria-label="left aligned">
             All
           </ToggleButton>
           {productCategories &&
@@ -224,18 +248,6 @@ function Home() {
                 {item}
               </ToggleButton>
             ))}
-          {/* <ToggleButton value="center" aria-label="centered">
-            Apparel
-          </ToggleButton>
-          <ToggleButton value="aligned" aria-label="justified aligned">
-            Electronics
-          </ToggleButton>
-          <ToggleButton value="right" aria-label="right aligned">
-            Footwear
-          </ToggleButton>
-          <ToggleButton value="justify" aria-label="justified">
-            Personal Care
-          </ToggleButton> */}
         </ToggleButtonGroup>
       </div>
       <div
@@ -252,7 +264,7 @@ function Home() {
             {/* <MenuItem value="">
               <em>None</em>
             </MenuItem> */}
-            <MenuItem value="">Default</MenuItem>
+            <MenuItem value="def">Default</MenuItem>
             <MenuItem value={10}>Price: High to Low</MenuItem>
             <MenuItem value={20}>Price: Low to High</MenuItem>
             <MenuItem value={30}>Newest</MenuItem>
@@ -261,8 +273,8 @@ function Home() {
       </div>
       <div className="product-card-div">
         <div className="productcard-div">
-          {filteredProducts &&
-            filteredProducts.map((data) => (
+          {productList &&
+            productList.map((data) => (
               <ProductCard
                 name={data.itemName}
                 price={data.itemPrice}

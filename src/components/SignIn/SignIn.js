@@ -4,6 +4,8 @@ import LockIcon from "@mui/icons-material/Lock";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import axios from "axios";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
@@ -12,6 +14,39 @@ function SignIn() {
     email: "",
     password: "",
   });
+
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = React.useState(false);
+
+  const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+
+  const [openInputErrorSnackbar, setOpenInputErrorSnackbar] =
+    React.useState(false);
+
+  const handleSuccessSnackbar = () => {
+    setOpenSuccessSnackbar(true);
+  };
+
+  const handleErrorSnackbar = () => {
+    setOpenErrorSnackbar(true);
+  };
+
+  const handleInputErrorSnackbar = () => {
+    setOpenInputErrorSnackbar(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSuccessSnackbar(false);
+    setOpenErrorSnackbar(false);
+    setOpenInputErrorSnackbar(false);
+  };
 
   const handleChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
@@ -24,7 +59,8 @@ function SignIn() {
     e.preventDefault();
     const { email, password } = state;
     if (!email || !password) {
-      alert("Please fill the deails properly!");
+      // alert("Please fill the deails properly!");
+      handleInputErrorSnackbar();
       return;
     }
     try {
@@ -37,6 +73,7 @@ function SignIn() {
       );
       if (!response.error) {
         console.log(response);
+        handleSuccessSnackbar();
         dispatch({
           type: "SET_USER",
           payload: {
@@ -45,14 +82,24 @@ function SignIn() {
             lastName: response.data.data.lastName,
             email: response.data.data.email,
             contact: response.data.data.contact,
+            addressName: response.data.data.addressName,
+            street: response.data.data.street,
+            city: response.data.data.city,
+            state: response.data.data.state,
+            landmark: response.data.data.landmark,
+            zipCode: response.data.data.zipCode,
           },
         });
         navigate("/products");
       }
     } catch {
-      alert("Error in signup!");
+      //alert("Error in signup!");
+      handleErrorSnackbar();
     }
   };
+
+  var vertical = "top";
+  var horizontal = "right";
 
   return (
     <>
@@ -113,6 +160,42 @@ function SignIn() {
           </p>
         </div>
       </div>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openSuccessSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        key={vertical + horizontal}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Login successful!
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openErrorSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        key={vertical + horizontal}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          Login failed!
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openInputErrorSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        key={vertical + horizontal}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          Please fill all the fields properly!
+        </Alert>
+      </Snackbar>
     </>
   );
 }

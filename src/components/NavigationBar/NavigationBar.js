@@ -65,7 +65,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function NavigationBar() {
   const { userDetails } = useSelector((state) => state.common);
 
-  const [searchText, setSearchText] = React.useState("");
+  const [searchText, setSearchText] = React.useState();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -174,8 +174,8 @@ export default function NavigationBar() {
   };
 
   const handleSearchText = (e) => {
-    setSearchText(e.target.value);
     dispatch({ type: "SET_SEARCH_TEXT", payload: e.target.value });
+    setSearchText(e.target.value);
   };
 
   return (

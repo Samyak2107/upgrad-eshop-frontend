@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -12,11 +13,14 @@ import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { useNavigate } from "react-router";
+import axios from "axios";
 import "./ConfirmOrder.css";
 
 const steps = ["Items", "Select Address", "Confirm Order"];
 
 export default function ConfirmOrder() {
+  const { userDetails } = useSelector((state) => state.common);
+
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set());
 
@@ -70,18 +74,19 @@ export default function ConfirmOrder() {
 
   const { confirmedProduct } = useSelector((state) => state.common);
 
-  const [state, setState] = React.useState({
-    name: "",
+  const [state, setState] = useState({
+    addressName: "",
     contact: "",
     street: "",
     city: "",
-    state: "",
+    stateValue: "",
     landmark: "",
     zipCode: "",
   });
 
   const handleInputChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
+    console.log(e.target.value);
   };
 
   const navigate = useNavigate();
@@ -90,6 +95,56 @@ export default function ConfirmOrder() {
     e.preventDefault();
     navigate("/products");
     alert("Order placed successfully!");
+  };
+
+  const handlePutAddress = async (e) => {
+    e.preventDefault();
+    // const {
+    //   addressName,
+    //   contact,
+    //   street,
+    //   city,
+    //   stateValue,
+    //   landmark,
+    //   zipCode,
+    // } = state;
+    // if (
+    //   !addressName ||
+    //   !contact ||
+    //   !street ||
+    //   !city ||
+    //   !stateValue ||
+    //   !landmark ||
+    //   !zipCode
+    // ) {
+    //   alert("Please enter all the fields");
+    // } else {
+    //   try {
+    //     const email = userDetails.email;
+    //     var state = stateValue;
+    //     const response = await axios.put(
+    //       "https://samyak-eshop-upgrad.onrender.com/users/address-add",
+    //       {
+    //         email,
+    //         addressName,
+    //         contact,
+    //         street,
+    //         city,
+    //         state,
+    //         landmark,
+    //         zipCode,
+    //       }
+    //     );
+    //     if (!response.error) {
+    //       console.log("Put address =>", response);
+    //       alert("Address addition was successful!");
+    //       handleNext();
+    //     }
+    //   } catch {
+    //     alert("Address addition failed!");
+    //   }
+    // }
+    handleNext();
   };
 
   return (
@@ -237,8 +292,8 @@ export default function ConfirmOrder() {
                     variant="outlined"
                     sx={{ width: "40ch" }}
                     type="text"
-                    name="name"
-                    value={state.name}
+                    name="addressName"
+                    value={state.addressName}
                     onChange={(e) => handleInputChange(e)}
                   />
                 </div>
@@ -285,8 +340,8 @@ export default function ConfirmOrder() {
                     variant="outlined"
                     sx={{ width: "40ch" }}
                     type="text"
-                    name="state"
-                    value={state.state}
+                    name="stateValue"
+                    value={state.stateValue}
                     onChange={(e) => handleInputChange(e)}
                   />
                 </div>
@@ -331,7 +386,7 @@ export default function ConfirmOrder() {
                   Back
                 </Button>
                 <Button
-                  onClick={handleNext}
+                  onClick={(e) => handlePutAddress(e)}
                   variant="contained"
                   sx={{ background: "var(--primary)" }}
                 >
@@ -368,7 +423,7 @@ export default function ConfirmOrder() {
                     {confirmedProduct.price * confirmedProduct.orderQuantity}
                   </p>
                 </div>
-                <div class="vl"></div>
+                <div className="vl"></div>
                 <div className="placeorder-screen-right">
                   <label style={{ fontSize: "35px" }}>Address Details:</label>
                   <p style={{ marginTop: "10px" }}>{state.name}</p>

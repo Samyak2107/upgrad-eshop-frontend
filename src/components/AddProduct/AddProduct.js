@@ -5,9 +5,27 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import CreatableSelect from "react-select/creatable";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
 function AddProduct() {
   const [itemLength, setItemLength] = useState();
+  const [itemCategories, setItemCategories] = useState();
+
+  useEffect(() => {
+    async function getProductCategories() {
+      const response = await axios.get(
+        "https://samyak-eshop-upgrad.onrender.com/products/get-categories"
+      );
+      if (!response.error) {
+        console.log("Product categories => ", response);
+        setItemCategories(response.data.data);
+        setOptions(response.data.data.map((item) => createOption(item)));
+      }
+    }
+    getProductCategories();
+  }, []);
+
   useEffect(() => {
     async function getProductCount() {
       const response = await axios.get(
@@ -22,6 +40,33 @@ function AddProduct() {
     }
     getProductCount();
   }, []);
+
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = React.useState(false);
+
+  const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+
+  const handleSuccessSnackbar = () => {
+    setOpenSuccessSnackbar(true);
+  };
+
+  const handleErrorSnackbar = () => {
+    setOpenErrorSnackbar(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSuccessSnackbar(false);
+    setOpenErrorSnackbar(false);
+  };
+
+  var vertical = "top";
+  var horizontal = "right";
 
   const createOption = (label) => ({
     label,
@@ -89,27 +134,33 @@ function AddProduct() {
       !itemImageUrl ||
       !itemDesc
     ) {
-      alert("Please fill all the required fields!");
+      // alert("Please fill all the required fields!");
+      handleErrorSnackbar();
       return;
     }
     try {
-      const response = await axios.post("http://localhost:4000/products/add", {
-        itemId,
-        itemName,
-        itemCategory,
-        itemManufacturer,
-        availableQuantity,
-        itemPrice,
-        itemImageUrl,
-        itemDesc,
-      });
+      const response = await axios.post(
+        "https://samyak-eshop-upgrad.onrender.com/products/add",
+        {
+          itemId,
+          itemName,
+          itemCategory,
+          itemManufacturer,
+          availableQuantity,
+          itemPrice,
+          itemImageUrl,
+          itemDesc,
+        }
+      );
       if (!response.error) {
         console.log(response);
-        alert("Product added successfully!");
+        // alert("Product added successfully!");
+        handleSuccessSnackbar();
         navigate("/products");
       }
     } catch {
-      alert("Error in adding a product!");
+      // alert("Error in adding a product!");
+      handleErrorSnackbar();
     }
   };
 
@@ -230,6 +281,30 @@ function AddProduct() {
           </div>
         </div>
       </div>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openErrorSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        key={vertical + horizontal}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          Product addition failed!
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openSuccessSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        key={vertical + horizontal}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Product added successfully!
+        </Alert>
+      </Snackbar>
     </>
   );
 }

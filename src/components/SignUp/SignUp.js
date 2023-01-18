@@ -4,6 +4,8 @@ import LockIcon from "@mui/icons-material/Lock";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import axios from "axios";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
@@ -17,6 +19,42 @@ function SignUp() {
     confirmPassword: "",
     contact: "",
   });
+
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = React.useState(false);
+
+  const [openErrorSnackbar, setOpenErrorSnackbar] = React.useState(false);
+
+  const [openPasswordErrorSnackbar, setOpenPasswordErrorSnackbar] =
+    React.useState(false);
+
+  const handleSuccessSnackbar = () => {
+    setOpenSuccessSnackbar(true);
+  };
+
+  const handleErrorSnackbar = () => {
+    setOpenErrorSnackbar(true);
+  };
+
+  const handlePasswordErrorSnackbar = () => {
+    setOpenPasswordErrorSnackbar(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSuccessSnackbar(false);
+    setOpenErrorSnackbar(false);
+    setOpenPasswordErrorSnackbar(false);
+  };
+
+  var vertical = "top";
+  var horizontal = "right";
 
   const handleChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
@@ -44,12 +82,13 @@ function SignUp() {
       !confirmPassword ||
       !contact
     ) {
-      alert("Please fill all the required fields!");
+      // alert("Please fill all the required fields!");
+      handleErrorSnackbar();
       return;
     }
     if (password !== confirmPassword) {
-      alert("Password does not match");
-      //handlePasswordErrorSnackbar();
+      // alert("Password does not match");
+      handlePasswordErrorSnackbar();
       return;
     }
     try {
@@ -58,6 +97,7 @@ function SignUp() {
         { userType, firstName, lastName, email, password, contact }
       );
       if (!response.error) {
+        handleSuccessSnackbar();
         console.log(response);
         dispatch({
           type: "SET_USER",
@@ -67,12 +107,19 @@ function SignUp() {
             lastName: response.data.data.lastName,
             email: response.data.data.email,
             contact: response.data.data.contact,
+            addressName: response.data.data.addressName,
+            street: response.data.data.street,
+            city: response.data.data.city,
+            state: response.data.data.state,
+            landmark: response.data.data.landmark,
+            zipCode: response.data.data.zipCode,
           },
         });
         navigate("/products");
       }
     } catch {
-      alert("Error in signup!");
+      // alert("Error in signup!");
+      handleErrorSnackbar();
     }
   };
 
@@ -186,6 +233,42 @@ function SignUp() {
           </p>
         </div>
       </div>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openSuccessSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        key={vertical + horizontal}
+      >
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          Signup successful!
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openErrorSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        key={vertical + horizontal}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          Signup failed!
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openPasswordErrorSnackbar}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        key={vertical + horizontal}
+      >
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+          Password and confirm password do not match!
+        </Alert>
+      </Snackbar>
     </>
   );
 }
